@@ -1,119 +1,117 @@
 <!DOCTYPE html><html lang="ru">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Супер честное казино!!</title>
   <style>
     body {
-      margin: 0;
-      padding: 0;
-      background: #000 url('фон для казино.jpg') no-repeat center center fixed;
+      background: url('фон для казино.jpg') no-repeat center center fixed;
       background-size: cover;
-      font-family: Arial, sans-serif;
       color: #fff;
       text-align: center;
-    }body::before {
-  content: '';
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  background: rgba(0,0,0,0.5);
-  z-index: -1;
-}
-
-h1 {
-  color: orange;
-  text-shadow: 2px 2px 4px #000;
-  margin-top: 20px;
-}
-
-.edition {
-  font-size: 14px;
-  color: #ccc;
-  text-shadow: 1px 1px 2px #000;
-}
-
-.balance, .bet-label, #result {
-  text-shadow: 1px 1px 2px #000;
-  margin: 10px;
-}
-
-#betAmount {
-  padding: 5px;
-  font-size: 16px;
-  width: 60px;
-}
-
-.slot-machine {
-  position: relative;
-  display: inline-block;
-  margin-top: 20px;
-}
-
-.grid {
-  display: grid;
-  grid-template-columns: repeat(3, 80px);
-  grid-template-rows: repeat(3, 80px);
-  gap: 10px;
-  background-color: rgba(0,0,0,0.6);
-  padding: 10px;
-  border-radius: 10px;
-  position: relative;
-}
-
-.cell {
-  background-color: #111;
-  border: 2px solid yellow;
-  font-size: 28px;
-  color: red;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-shadow: 1px 1px 2px #000;
-}
-
-.cell.highlight {
-  background-color: #440000;
-  animation: blink 0.5s alternate infinite;
-}
-
-@keyframes blink {
-  from { box-shadow: 0 0 5px red; }
-  to { box-shadow: 0 0 15px yellow; }
-}
-
-.start-button {
-  margin-top: 20px;
-  padding: 10px 20px;
-  font-size: 18px;
-  background-color: yellow;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
+      font-family: Arial, sans-serif;
+      position: relative;
+      margin: 0;
+      padding: 0;
+    }
+    body::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.5);
+      z-index: -1;
+    }
+    h1 {
+      color: orange;
+      text-shadow: 2px 2px 4px #000, -2px -2px 4px #000;
+      margin: 10px 0 5px;
+    }
+    .edition {
+      font-size: 14px;
+      color: #ccc;
+      margin-bottom: 10px;
+      text-shadow: 1px 1px 2px #000;
+    }
+    .balance, .bet-label, #result {
+      text-shadow: 1px 1px 2px #000;
+    }
+    #betAmount {
+      padding: 5px;
+      font-size: 16px;
+      width: 60px;
+    }
+    .slot-machine {
+      display: flex;
+      justify-content: center;
+      margin-top: 20px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 80px);
+      grid-template-rows: repeat(3, 80px);
+      gap: 5px;
+      background-color: rgba(0,0,0,0.6);
+      padding: 10px;
+      border-radius: 10px;
+    }
+    .cell {
+      width: 80px;
+      height: 80px;
+      background-color: #111;
+      border: 2px solid yellow;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      color: red;
+      box-shadow: 0 0 10px yellow;
+      text-shadow: 1px 1px 2px #000;
+    }
+    .highlight {
+      animation: blink 0.5s alternate infinite;
+    }
+    @keyframes blink {
+      from { background-color: yellow; color: black; }
+      to { background-color: red; color: white; }
+    }
+    .start-button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 18px;
+      background-color: yellow;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+    }
   </style>
 </head>
 <body>
   <h1>Супер честное казино!!</h1>
-  <div class="edition">Daniil edition</div>
-  <div class="balance">Баланс: <span id="balance">1000</span> ₴</div><label class="bet-label">Ставка: <input type="number" id="betAmount" value="10" min="1" max="100" /> ₴</label>
-
+  <p class="edition">Daniil edition</p>
+  <div class="balance">Баланс: <span id="balance">1000</span> ₴</div>
+  <label class="bet-label">Ставка:
+    <input type="number" id="betAmount" value="10" min="1" max="100" /> ₴
+  </label>
   <div class="slot-machine">
     <div class="grid" id="grid"></div>
-  </div><button class="start-button" onclick="spin()">Старт</button>
-
-  <div id="result"></div><audio id="spinSound" src="spin.mp3"></audio> <audio id="winSound" src="win.mp3"></audio> <audio id="jackpotSound" src="jackpot.mp3"></audio>
-
-  <script>
+  </div>
+  <button class="start-button" onclick="spin()">Старт</button>
+  <div id="result"></div>
+  <audio id="spinSound" src="sounds/spin.mp3"></audio>
+  <audio id="winSound" src="sounds/win.mp3"></audio>
+  <audio id="jackpotSound" src="sounds/jackpot.mp3"></audio>  <script>
     const symbols = [
-      { icon: '7', value: 10.0 },
-      { icon: '★', value: 5.0 },
-      { icon: '🔔', value: 2.5 },
-      { icon: '🍇', value: 2.0 },
-      { icon: '🍋', value: 1.5 },
-      { icon: '🍒', value: 1.2 },
-      { icon: '🍑', value: 0.75 },
-      { icon: 'BAR', value: 0.5 }
+      { icon: '7', valueMultiplier: 10, weight: 1 },
+      { icon: '★', valueMultiplier: 5, weight: 2 },
+      { icon: '🔔', valueMultiplier: 2.5, weight: 4 },
+      { icon: '🍇', valueMultiplier: 2, weight: 6 },
+      { icon: '🍋', valueMultiplier: 1.5, weight: 8 },
+      { icon: '🍒', valueMultiplier: 1.2, weight: 10 },
+      { icon: '🍑', valueMultiplier: 0.75, weight: 12 },
+      { icon: 'BAR', valueMultiplier: 0.5, weight: 15 }
     ];
 
     const grid = document.getElementById('grid');
@@ -121,8 +119,13 @@ h1 {
     const betInput = document.getElementById('betAmount');
     const result = document.getElementById('result');
 
-    function getRandomSymbol() {
-      return symbols[Math.floor(Math.random() * symbols.length)];
+    function weightedRandomSymbol() {
+      const totalWeight = symbols.reduce((sum, s) => sum + s.weight, 0);
+      let rand = Math.random() * totalWeight;
+      for (let s of symbols) {
+        if (rand < s.weight) return s;
+        rand -= s.weight;
+      }
     }
 
     async function spin() {
@@ -137,8 +140,8 @@ h1 {
       balance -= bet;
       balanceEl.textContent = balance;
       result.textContent = '';
-      document.getElementById('spinSound').play();
 
+      document.getElementById('spinSound').play();
       grid.innerHTML = '';
       const matrix = [[], [], []];
       const cells = [];
@@ -154,9 +157,9 @@ h1 {
       }
 
       for (let col = 0; col < 3; col++) {
-        await new Promise(r => setTimeout(r, 400));
+        await new Promise(resolve => setTimeout(resolve, 500));
         for (let row = 0; row < 3; row++) {
-          const symbol = getRandomSymbol();
+          const symbol = weightedRandomSymbol();
           matrix[row][col] = symbol;
           const index = row * 3 + col;
           cells[index].textContent = symbol.icon;
@@ -172,8 +175,8 @@ h1 {
           [[0,2],[1,1],[2,0]]
         ];
 
-        let winSymbol = null;
         let winLine = null;
+        let winSymbol = null;
 
         for (let line of lines) {
           const [a,b,c] = line;
@@ -181,32 +184,31 @@ h1 {
           const s2 = matrix[b[0]][b[1]].icon;
           const s3 = matrix[c[0]][c[1]].icon;
           if (s1 === s2 && s2 === s3) {
-            winSymbol = symbols.find(s => s.icon === s1);
+            winSymbol = matrix[a[0]][a[1]];
             winLine = line;
             break;
           }
         }
 
         if (winSymbol) {
-          let winAmount = Math.round(winSymbol.value * bet);
+          const winAmount = Math.floor(bet * winSymbol.valueMultiplier);
           balance += winAmount;
           balanceEl.textContent = balance;
 
-          // Highlight winning line
-          winLine.forEach(([row, col]) => {
-            const index = row * 3 + col;
-            cells[index].classList.add('highlight');
-          });
-
           if (winSymbol.icon === '7') {
             document.getElementById('jackpotSound').play();
-            result.innerHTML = `<strong style="color:yellow; text-shadow:2px 2px 2px #000;">ДЖЕКПОТ! +${winAmount} ₴</strong>`;
+            result.innerHTML = `<span class="highlight">ДЖЕКПОТ! +${winAmount} ₴</span>`;
           } else {
             document.getElementById('winSound').play();
             result.textContent = `Выигрыш: ${winAmount} ₴`;
           }
+
+          for (let [r,c] of winLine) {
+            const i = r * 3 + c;
+            cells[i].classList.add('highlight');
+          }
         } else {
-          result.textContent = 'Не повезло :(';
+          result.textContent = 'Не повезло :('; 
         }
       }, 500);
     }
