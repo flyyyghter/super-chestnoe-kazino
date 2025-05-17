@@ -1,5 +1,4 @@
-<!DOCTYPE html>
-<html lang="ru">
+<!DOCTYPE html><html lang="ru">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -12,8 +11,6 @@
       text-align: center;
       font-family: Arial, sans-serif;
       position: relative;
-      margin: 0;
-      padding: 0;
     }
     body::before {
       content: "";
@@ -28,7 +25,6 @@
     h1 {
       color: orange;
       text-shadow: 2px 2px 4px #000, -2px -2px 4px #000;
-      margin-top: 20px;
     }
     .edition {
       font-size: 14px;
@@ -38,8 +34,6 @@
     }
     .balance, .bet-label, #result {
       text-shadow: 1px 1px 2px #000;
-      font-size: 18px;
-      margin: 10px;
     }
     #betAmount {
       padding: 5px;
@@ -49,34 +43,34 @@
     .slot-machine {
       display: flex;
       justify-content: center;
-      margin-top: 10px;
+      margin-top: 20px;
     }
     .grid {
       display: grid;
-      grid-template-columns: repeat(3, 100px);
-      grid-template-rows: repeat(3, 100px);
-      gap: 8px;
+      grid-template-columns: repeat(3, 80px);
+      grid-template-rows: repeat(3, 80px);
+      gap: 10px;
       background-color: rgba(0,0,0,0.6);
-      padding: 12px;
+      padding: 10px;
       border-radius: 10px;
     }
     .cell {
-      width: 100px;
-      height: 100px;
+      width: 80px;
+      height: 80px;
       background-color: #111;
       border: 2px solid yellow;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 32px;
+      font-size: 28px;
       color: red;
       box-shadow: 0 0 10px yellow;
       text-shadow: 1px 1px 2px #000;
     }
     .start-button {
       margin-top: 20px;
-      padding: 12px 30px;
-      font-size: 20px;
+      padding: 10px 20px;
+      font-size: 18px;
       background-color: yellow;
       border: none;
       cursor: pointer;
@@ -85,7 +79,6 @@
     .jackpot-animation {
       animation: flash 1s infinite alternate;
       text-shadow: 2px 2px 4px #000;
-      font-size: 24px;
     }
     @keyframes flash {
       from { background-color: yellow; color: black; }
@@ -96,34 +89,24 @@
 <body>
   <h1>Супер честное казино!!</h1>
   <p class="edition">Daniil edition</p>
-  <div class="balance">Баланс: <span id="balance">100</span> ₴</div>
-
-  <label class="bet-label">Ставка:
-    <input type="number" id="betAmount" value="10" min="1" max="100" /> ₴
-  </label>
+  <div class="balance">Баланс: <span id="balance">100</span> ₴</div><label class="bet-label">Ставка: <input type="number" id="betAmount" value="10" min="1" max="100" /> ₴ </label>
 
   <div class="slot-machine" id="slot-machine">
     <div class="grid" id="grid"></div>
-  </div>
+  </div><button class="start-button" onclick="spin()">Старт</button>
 
-  <button class="start-button" onclick="spin()">Старт</button>
-  <div id="result"></div>
-
-  <!-- Подключаем звуки (если они лежат рядом с этим HTML) -->
-  <audio id="spinSound" src="spin.mp3"></audio>
-  <audio id="winSound" src="win.mp3"></audio>
-  <audio id="jackpotSound" src="jackpot.mp3"></audio>
+  <div id="result"></div><audio id="spinSound" src="sounds/spin.mp3"></audio> <audio id="winSound" src="sounds/win.mp3"></audio> <audio id="jackpotSound" src="sounds/jackpot.mp3"></audio>
 
   <script>
     const symbols = [
-      { icon: '7', value: 750 },
-      { icon: '★', value: 200 },
-      { icon: '🔔', value: 60 },
-      { icon: '🍇', value: 40 },
-      { icon: '🍋', value: 40 },
-      { icon: '🍒', value: 40 },
-      { icon: '🍑', value: 40 },
-      { icon: 'BAR', value: 5 }
+      { icon: '7', multiplier: 10 },       // 1000% (10x)
+      { icon: '★', multiplier: 5 },       // 500%
+      { icon: '🔔', multiplier: 2.5 },     // 250%
+      { icon: '🍇', multiplier: 2 },       // 200%
+      { icon: '🍋', multiplier: 1.5 },     // 150%
+      { icon: '🍒', multiplier: 1.2 },     // 120%
+      { icon: '🍑', multiplier: 0.75 },    // 75%
+      { icon: 'BAR', multiplier: 0.5 }     // 50%
     ];
 
     const grid = document.getElementById('grid');
@@ -132,11 +115,7 @@
     const result = document.getElementById('result');
 
     function getRandomSymbol() {
-      const chance = Math.random();
-      if (chance < 0.02) return symbols[0]; // редкий джекпот 7
-      if (chance < 0.1) return symbols[1];  // звезда
-      if (chance < 0.25) return symbols[2]; // 🔔
-      return symbols[Math.floor(Math.random() * (symbols.length - 3)) + 3]; // остальные часто
+      return symbols[Math.floor(Math.random() * symbols.length)];
     }
 
     async function spin() {
@@ -169,7 +148,7 @@
       }
 
       for (let col = 0; col < 3; col++) {
-        await new Promise(resolve => setTimeout(resolve, 400));
+        await new Promise(resolve => setTimeout(resolve, 500));
         for (let row = 0; row < 3; row++) {
           const symbol = getRandomSymbol();
           matrix[row][col] = symbol;
@@ -200,7 +179,7 @@
         }
 
         if (winSymbol) {
-          let winAmount = winSymbol.icon === '7' ? bet * 10 : winSymbol.value;
+          let winAmount = Math.round(bet * winSymbol.multiplier);
           balance += winAmount;
           balanceEl.textContent = balance;
           if (winSymbol.icon === '7') {
@@ -215,6 +194,5 @@
         }
       }, 500);
     }
-  </script>
-</body>
+  </script></body>
 </html>
