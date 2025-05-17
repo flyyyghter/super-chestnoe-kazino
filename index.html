@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="ru">
+<!DOCTYPE html>
+<html lang="ru">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -11,6 +12,8 @@
       text-align: center;
       font-family: Arial, sans-serif;
       position: relative;
+      margin: 0;
+      padding: 0;
     }
     body::before {
       content: "";
@@ -25,6 +28,7 @@
     h1 {
       color: orange;
       text-shadow: 2px 2px 4px #000, -2px -2px 4px #000;
+      margin-top: 20px;
     }
     .edition {
       font-size: 14px;
@@ -34,6 +38,7 @@
     }
     .balance, .bet-label, #result {
       text-shadow: 1px 1px 2px #000;
+      font-size: 18px;
     }
     #betAmount {
       padding: 5px;
@@ -89,24 +94,34 @@
 <body>
   <h1>Супер честное казино!!</h1>
   <p class="edition">Daniil edition</p>
-  <div class="balance">Баланс: <span id="balance">1000</span> ₴</div><label class="bet-label">Ставка: <input type="number" id="betAmount" value="10" min="1" max="100" /> ₴ </label>
+  <div class="balance">Баланс: <span id="balance">1000</span> ₴</div>
+
+  <label class="bet-label">Ставка:
+    <input type="number" id="betAmount" value="10" min="1" max="1000" /> ₴
+  </label>
 
   <div class="slot-machine" id="slot-machine">
     <div class="grid" id="grid"></div>
-  </div><button class="start-button" onclick="spin()">Старт</button>
+  </div>
 
-  <div id="result"></div><audio id="spinSound" src="sounds/spin.mp3"></audio> <audio id="winSound" src="sounds/win.mp3"></audio> <audio id="jackpotSound" src="sounds/jackpot.mp3"></audio>
+  <button class="start-button" onclick="spin()">Старт</button>
+  <div id="result"></div>
+
+  <!-- Аудио -->
+  <audio id="spinSound" src="spin.mp3"></audio>
+  <audio id="winSound" src="win.mp3"></audio>
+  <audio id="jackpotSound" src="jackpot.mp3"></audio>
 
   <script>
     const symbols = [
-      { icon: '7', multiplier: 10 },       // 1000% (10x)
-      { icon: '★', multiplier: 5 },       // 500%
-      { icon: '🔔', multiplier: 2.5 },     // 250%
-      { icon: '🍇', multiplier: 2 },       // 200%
-      { icon: '🍋', multiplier: 1.5 },     // 150%
-      { icon: '🍒', multiplier: 1.2 },     // 120%
-      { icon: '🍑', multiplier: 0.75 },    // 75%
-      { icon: 'BAR', multiplier: 0.5 }     // 50%
+      { icon: '7', multiplier: 10.0 },
+      { icon: '★', multiplier: 5.0 },
+      { icon: '🔔', multiplier: 2.5 },
+      { icon: '🍇', multiplier: 2.0 },
+      { icon: '🍋', multiplier: 1.5 },
+      { icon: '🍒', multiplier: 1.2 },
+      { icon: '🍑', multiplier: 0.75 },
+      { icon: 'BAR', multiplier: 0.5 }
     ];
 
     const grid = document.getElementById('grid');
@@ -122,7 +137,7 @@
       const bet = parseInt(betInput.value);
       let balance = parseInt(balanceEl.textContent);
 
-      if (bet > balance) {
+      if (bet > balance || bet <= 0) {
         result.textContent = 'Недостаточно средств!';
         return;
       }
@@ -148,7 +163,7 @@
       }
 
       for (let col = 0; col < 3; col++) {
-        await new Promise(resolve => setTimeout(resolve, 500));
+        await new Promise(resolve => setTimeout(resolve, 400));
         for (let row = 0; row < 3; row++) {
           const symbol = getRandomSymbol();
           matrix[row][col] = symbol;
@@ -179,7 +194,7 @@
         }
 
         if (winSymbol) {
-          let winAmount = Math.round(bet * winSymbol.multiplier);
+          let winAmount = Math.floor(bet * winSymbol.multiplier);
           balance += winAmount;
           balanceEl.textContent = balance;
           if (winSymbol.icon === '7') {
@@ -194,5 +209,6 @@
         }
       }, 500);
     }
-  </script></body>
+  </script>
+</body>
 </html>
