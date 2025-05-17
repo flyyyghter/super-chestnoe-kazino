@@ -1,18 +1,16 @@
-<!DOCTYPE html><html lang="ru">
+<!DOCTYPE html>
+<html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Супер честное казино!!</title>
   <style>
     body {
       background: url('фон для казино.jpg') no-repeat center center fixed;
       background-size: cover;
       color: #fff;
-      text-align: center;
       font-family: Arial, sans-serif;
+      text-align: center;
       position: relative;
-      margin: 0;
-      padding: 0;
     }
     body::before {
       content: "";
@@ -27,12 +25,10 @@
     h1 {
       color: orange;
       text-shadow: 2px 2px 4px #000, -2px -2px 4px #000;
-      margin: 10px 0 5px;
     }
     .edition {
       font-size: 14px;
       color: #ccc;
-      margin-bottom: 10px;
       text-shadow: 1px 1px 2px #000;
     }
     .balance, .bet-label, #result {
@@ -43,18 +39,15 @@
       font-size: 16px;
       width: 60px;
     }
-    .slot-machine {
-      display: flex;
-      justify-content: center;
-      margin-top: 20px;
-    }
     .grid {
       display: grid;
       grid-template-columns: repeat(3, 80px);
       grid-template-rows: repeat(3, 80px);
-      gap: 5px;
+      gap: 10px;
+      justify-content: center;
       background-color: rgba(0,0,0,0.6);
       padding: 10px;
+      margin: 20px auto;
       border-radius: 10px;
     }
     .cell {
@@ -70,21 +63,22 @@
       box-shadow: 0 0 10px yellow;
       text-shadow: 1px 1px 2px #000;
     }
-    .highlight {
-      animation: blink 0.5s alternate infinite;
-    }
-    @keyframes blink {
-      from { background-color: yellow; color: black; }
-      to { background-color: red; color: white; }
-    }
     .start-button {
-      margin-top: 20px;
+      margin-top: 10px;
       padding: 10px 20px;
       font-size: 18px;
       background-color: yellow;
       border: none;
-      cursor: pointer;
       border-radius: 5px;
+      cursor: pointer;
+    }
+    .jackpot-animation {
+      animation: flash 1s infinite alternate;
+      text-shadow: 2px 2px 4px #000;
+    }
+    @keyframes flash {
+      from { background-color: yellow; color: black; }
+      to { background-color: red; color: white; }
     }
   </style>
 </head>
@@ -95,23 +89,26 @@
   <label class="bet-label">Ставка:
     <input type="number" id="betAmount" value="10" min="1" max="100" /> ₴
   </label>
-  <div class="slot-machine">
-    <div class="grid" id="grid"></div>
-  </div>
+
+  <div class="grid" id="grid"></div>
   <button class="start-button" onclick="spin()">Старт</button>
   <div id="result"></div>
-  <audio id="spinSound" src="sounds/spin.mp3"></audio>
-  <audio id="winSound" src="sounds/win.mp3"></audio>
-  <audio id="jackpotSound" src="sounds/jackpot.mp3"></audio>  <script>
+
+  <!-- Звук -->
+  <audio id="spinSound" src="spin.mp3"></audio>
+  <audio id="winSound" src="win.mp3"></audio>
+  <audio id="jackpotSound" src="jackpot.mp3"></audio>
+
+  <script>
     const symbols = [
-      { icon: '7', valueMultiplier: 10, weight: 1 },
-      { icon: '★', valueMultiplier: 5, weight: 2 },
-      { icon: '🔔', valueMultiplier: 2.5, weight: 4 },
-      { icon: '🍇', valueMultiplier: 2, weight: 6 },
-      { icon: '🍋', valueMultiplier: 1.5, weight: 8 },
-      { icon: '🍒', valueMultiplier: 1.2, weight: 10 },
-      { icon: '🍑', valueMultiplier: 0.75, weight: 12 },
-      { icon: 'BAR', valueMultiplier: 0.5, weight: 15 }
+      { icon: '7', multiplier: 10 },        // 1000%
+      { icon: '★', multiplier: 5 },         // 500%
+      { icon: '🔔', multiplier: 2.5 },      // 250%
+      { icon: '🍇', multiplier: 2 },        // 200%
+      { icon: '🍋', multiplier: 1.5 },      // 150%
+      { icon: '🍒', multiplier: 1.2 },      // 120%
+      { icon: '🍑', multiplier: 0.75 },     // 75%
+      { icon: 'BAR', multiplier: 0.5 }      // 50%
     ];
 
     const grid = document.getElementById('grid');
@@ -119,13 +116,16 @@
     const betInput = document.getElementById('betAmount');
     const result = document.getElementById('result');
 
-    function weightedRandomSymbol() {
-      const totalWeight = symbols.reduce((sum, s) => sum + s.weight, 0);
-      let rand = Math.random() * totalWeight;
-      for (let s of symbols) {
-        if (rand < s.weight) return s;
-        rand -= s.weight;
-      }
+    function getRandomSymbol() {
+      const r = Math.random();
+      if (r < 0.05) return symbols[0]; // 7 (джекпот)
+      if (r < 0.10) return symbols[1]; // ★
+      if (r < 0.17) return symbols[2]; // 🔔
+      if (r < 0.25) return symbols[3]; // 🍇
+      if (r < 0.4)  return symbols[4]; // 🍋
+      if (r < 0.6)  return symbols[5]; // 🍒
+      if (r < 0.85) return symbols[6]; // 🍑
+      return symbols[7];               // BAR
     }
 
     async function spin() {
@@ -141,7 +141,8 @@
       balanceEl.textContent = balance;
       result.textContent = '';
 
-      document.getElementById('spinSound').play();
+      try { document.getElementById('spinSound').play(); } catch (e) {}
+
       grid.innerHTML = '';
       const matrix = [[], [], []];
       const cells = [];
@@ -157,9 +158,9 @@
       }
 
       for (let col = 0; col < 3; col++) {
-        await new Promise(resolve => setTimeout(resolve, 500));
+        await new Promise(resolve => setTimeout(resolve, 400));
         for (let row = 0; row < 3; row++) {
-          const symbol = weightedRandomSymbol();
+          const symbol = getRandomSymbol();
           matrix[row][col] = symbol;
           const index = row * 3 + col;
           cells[index].textContent = symbol.icon;
@@ -175,42 +176,34 @@
           [[0,2],[1,1],[2,0]]
         ];
 
-        let winLine = null;
         let winSymbol = null;
-
         for (let line of lines) {
           const [a,b,c] = line;
           const s1 = matrix[a[0]][a[1]].icon;
           const s2 = matrix[b[0]][b[1]].icon;
           const s3 = matrix[c[0]][c[1]].icon;
           if (s1 === s2 && s2 === s3) {
-            winSymbol = matrix[a[0]][a[1]];
-            winLine = line;
+            winSymbol = symbols.find(s => s.icon === s1);
             break;
           }
         }
 
         if (winSymbol) {
-          const winAmount = Math.floor(bet * winSymbol.valueMultiplier);
+          const winAmount = Math.floor(bet * winSymbol.multiplier);
           balance += winAmount;
           balanceEl.textContent = balance;
-
           if (winSymbol.icon === '7') {
-            document.getElementById('jackpotSound').play();
-            result.innerHTML = `<span class="highlight">ДЖЕКПОТ! +${winAmount} ₴</span>`;
+            try { document.getElementById('jackpotSound').play(); } catch (e) {}
+            result.innerHTML = `<span class="jackpot-animation">ДЖЕКПОТ! +${winAmount} ₴</span>`;
           } else {
-            document.getElementById('winSound').play();
+            try { document.getElementById('winSound').play(); } catch (e) {}
             result.textContent = `Выигрыш: ${winAmount} ₴`;
-          }
-
-          for (let [r,c] of winLine) {
-            const i = r * 3 + c;
-            cells[i].classList.add('highlight');
           }
         } else {
           result.textContent = 'Не повезло :('; 
         }
-      }, 500);
+      }, 300);
     }
-  </script></body>
+  </script>
+</body>
 </html>
